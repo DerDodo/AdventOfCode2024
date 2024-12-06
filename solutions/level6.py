@@ -1,4 +1,3 @@
-import copy
 import time
 from enum import Enum
 
@@ -60,8 +59,7 @@ class Position:
 
 
 class Field(Enum):
-    Unvisited = "."
-    Visited = "x"
+    Free = "."
     Obstacle = "#"
     GuardStart = "^"
 
@@ -70,22 +68,17 @@ class Facility:
     _field: list[list[Field]]
     _guard_start: Position
 
-    def __init__(self, lines: list[str] = None, field: list[list[Field]] = None, guard_start: Position = None):
-        if lines:
-            self._field = []
-            for line in lines:
-                self._field.append(list(map(Field, line)))
-            self.init_guard_start()
-        else:
-            self._field = copy.deepcopy(field)
-            self._guard_start = guard_start.copy()
+    def __init__(self, lines: list[str]):
+        self._field = []
+        for line in lines:
+            self._field.append(list(map(Field, line)))
+        self.init_guard_start()
 
     def init_guard_start(self):
         for y in range(0, len(self._field)):
             for x in range(0, len(self._field[0])):
                 if self._field[y][x] == Field.GuardStart:
                     self._guard_start = Position(x, y)
-                    self._field[y][x] = Field.Visited
                     return
 
     def is_out_of_bounds(self, position: Position) -> bool:
@@ -94,14 +87,8 @@ class Facility:
     def get(self, position: Position) -> Field:
         return self._field[position.y][position.x]
 
-    def visit(self, position: Position):
-        self._field[position.y][position.x] = Field.Visited
-
     def get_guard_start(self) -> Position:
-        return self._guard_start.copy()
-
-    def get_num_visited(self) -> int:
-        return sum(map(lambda line: sum(map(lambda x: 1 if x == Field.Visited else 0, line)), self._field))
+        return self._guard_start
 
     def get_size(self) -> int:
         return len(self._field) * len(self._field[0])
@@ -114,10 +101,7 @@ class Facility:
         self._field[position.y][position.x] = Field.Obstacle
 
     def remove_obstacle(self, position: Position):
-        self._field[position.y][position.x] = Field.Unvisited
-
-    def copy(self):
-        return Facility(field=self._field, guard_start=self._guard_start)
+        self._field[position.y][position.x] = Field.Free
 
 
 class Guard:
@@ -132,7 +116,7 @@ class Guard:
         self._direction = Direction.North
         self._left_facility = False
 
-    def walk(self):
+    def step(self):
         new_position = self._position.copy()
         new_position.move(self._direction)
         if self._facility.is_out_of_bounds(new_position):
@@ -140,14 +124,13 @@ class Guard:
         elif self._facility.get(new_position) == Field.Obstacle:
             self._direction = self._direction.turn_right()
         else:
-            self._facility.visit(new_position)
-            self._position = new_position
+            self.set_position(new_position)
 
     def has_left_facility(self) -> bool:
         return self._left_facility
 
     def get_position(self) -> Position:
-        return self._position.copy()
+        return self._position
 
     def set_position(self, position: Position):
         self._position = position
@@ -164,7 +147,7 @@ class Guard:
             if self.get_history_hash() in history:
                 return True
             history.add(self.get_history_hash())
-            self.walk()
+            self.step()
         return False
 
     def get_history_hash(self) -> int:
@@ -180,9 +163,11 @@ def parse_input_file() -> tuple[Facility, Guard]:
 
 def level6_1() -> int:
     facility, guard = parse_input_file()
+    positions = set()
     while not guard.has_left_facility():
-        guard.walk()
-    return facility.get_num_visited()
+        positions.add(guard.get_position().get_hash())
+        guard.step()
+    return len(positions)
 
 
 def level6_2() -> int:
@@ -193,7 +178,7 @@ def level6_2() -> int:
     while not original_guard.has_left_facility():
         start_position = original_guard.get_position()
         start_direction = original_guard.get_direction()
-        original_guard.walk()
+        original_guard.step()
 
         position_hash = original_guard.get_position().get_hash()
         if original_guard.get_position() != original_facility.get_guard_start() and position_hash not in tried_obstacles:
