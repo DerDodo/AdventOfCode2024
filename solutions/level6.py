@@ -1,3 +1,5 @@
+import copy
+import time
 from enum import Enum
 
 from util.file_util import read_input_file
@@ -68,11 +70,15 @@ class Facility:
     _field: list[list[Field]]
     _guard_start: Position
 
-    def __init__(self, lines: list[str]):
-        self._field = []
-        for line in lines:
-            self._field.append(list(map(Field, line)))
-        self.init_guard_start()
+    def __init__(self, lines: list[str] = None, field: list[list[Field]] = None, guard_start: Position = None):
+        if lines:
+            self._field = []
+            for line in lines:
+                self._field.append(list(map(Field, line)))
+            self.init_guard_start()
+        else:
+            self._field = copy.deepcopy(field)
+            self._guard_start = guard_start.copy()
 
     def init_guard_start(self):
         for y in range(0, len(self._field)):
@@ -107,6 +113,12 @@ class Facility:
     def set_obstacle(self, position: Position):
         self._field[position.y][position.x] = Field.Obstacle
 
+    def remove_obstacle(self, position: Position):
+        self._field[position.y][position.x] = Field.Unvisited
+
+    def copy(self):
+        return Facility(field=self._field, guard_start=self._guard_start)
+
 
 class Guard:
     _facility: Facility
@@ -137,6 +149,15 @@ class Guard:
     def get_position(self) -> Position:
         return self._position.copy()
 
+    def set_position(self, position: Position):
+        self._position = position
+
+    def get_direction(self) -> Direction:
+        return self._direction
+
+    def set_direction(self, direction: Direction):
+        self._direction = direction
+
     def will_get_stuck(self) -> bool:
         history = set()
         while not self.has_left_facility():
@@ -152,7 +173,7 @@ class Guard:
 
 def parse_input_file() -> tuple[Facility, Guard]:
     lines = read_input_file(6)
-    facility = Facility(lines)
+    facility = Facility(lines = lines)
     guard = Guard(facility)
     return facility, guard
 
@@ -166,17 +187,27 @@ def level6_1() -> int:
 
 def level6_2() -> int:
     original_facility, original_guard = parse_input_file()
+    trial_facility = parse_input_file()[0]
     found_obstacles = set()
     tried_obstacles = set()
     while not original_guard.has_left_facility():
+        start_position = original_guard.get_position()
+        start_direction = original_guard.get_direction()
         original_guard.walk()
+
         position_hash = original_guard.get_position().get_hash()
         if original_guard.get_position() != original_facility.get_guard_start() and position_hash not in tried_obstacles:
-            trial_facility, trial_guard = parse_input_file()
+            trial_guard = Guard(trial_facility)
             trial_facility.set_obstacle(original_guard.get_position())
             tried_obstacles.add(position_hash)
+
+            trial_guard.set_position(start_position)
+            trial_guard.set_direction(start_direction)
+
             if trial_guard.will_get_stuck():
                 found_obstacles.add(position_hash)
+
+            trial_facility.remove_obstacle(original_guard.get_position())
     return len(found_obstacles)
 
 
