@@ -1,57 +1,7 @@
 from enum import Enum
 
 from util.file_util import read_input_file
-
-
-class Direction(Enum):
-    North = 0
-    East = 1
-    South = 2
-    West = 3
-
-    def get_next(self) -> tuple[int, int]:
-        match self:
-            case Direction.North:
-                return 0, -1
-            case Direction.East:
-                return 1, 0
-            case Direction.South:
-                return 0, 1
-            case Direction.West:
-                return -1, 0
-
-    def turn_right(self):
-        match self:
-            case Direction.North:
-                return Direction.East
-            case Direction.East:
-                return Direction.South
-            case Direction.South:
-                return Direction.West
-            case Direction.West:
-                return Direction.North
-
-
-class Position:
-    x: int
-    y: int
-
-    def __init__(self, x: int, y: int):
-        self.x = x
-        self.y = y
-
-    def move(self, direction: Direction):
-        delta = direction.get_next()
-        self.x += delta[0]
-        self.y += delta[1]
-
-    def get_hash(self) -> int:
-        return self.y * 1000 + self.x
-
-    def __eq__(self, other):
-        if isinstance(other, Position):
-            return self.x == other.x and self.y == other.y
-        return False
+from util.math_util import Position, Direction
 
 
 class Field(Enum):
@@ -62,19 +12,18 @@ class Field(Enum):
 
 class Facility:
     field: list[list[Field]]
+    bounds: Position
     guard_start: Position
 
     def __init__(self, lines: list[str]):
         self.field = [list(map(Field, line)) for line in lines]
+        self.bounds = Position(len(lines[0]), len(lines))
 
         for y in range(0, len(self.field)):
             for x in range(0, len(self.field[0])):
                 if self.field[y][x] == Field.GuardStart:
                     self.guard_start = Position(x, y)
                     return
-
-    def is_out_of_bounds(self, position: Position) -> bool:
-        return position.x < 0 or position.y < 0 or position.x >= len(self.field[0]) or position.y >= len(self.field)
 
     def get(self, position: Position) -> Field:
         return self.field[position.y][position.x]
@@ -101,7 +50,7 @@ class Guard:
     def step(self):
         new_position = Position(self.position.x, self.position.y)
         new_position.move(self.direction)
-        if self.facility.is_out_of_bounds(new_position):
+        if not new_position.is_in_bounds(self.facility.bounds):
             self.left_facility = True
         elif self.facility.get(new_position) == Field.Obstacle:
             self.direction = self.direction.turn_right()
