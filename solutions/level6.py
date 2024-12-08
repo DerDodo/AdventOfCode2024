@@ -1,8 +1,8 @@
-import time
 from enum import Enum
 
 from util.file_util import read_input_file
 from util.math_util import Position, Direction, Area
+from util.run_util import RunTimer
 
 
 class Field(Enum):
@@ -42,7 +42,7 @@ class Guard:
         self.left_facility = False
 
     def step(self):
-        new_position = Position(self.position.x + self.direction.value[0], self.position.y + self.direction.value[1])
+        new_position = Position(self.position.x + self.direction.x, self.position.y + self.direction.y)
         if not self.facility.is_in_bounds(new_position):
             self.left_facility = True
         elif self.facility[new_position] == Field.Obstacle:
@@ -53,13 +53,13 @@ class Guard:
     def will_get_stuck(self) -> bool:
         history = set()
         while not self.left_facility:
-            if self.get_history_hash() in history:
+            if self in history:
                 return True
-            history.add(self.get_history_hash())
+            history.add(self)
             self.step()
         return False
 
-    def get_history_hash(self) -> int:
+    def __hash__(self) -> int:
         return self.position.__hash__() * 10 + self.direction.__hash__()
 
 
@@ -106,10 +106,9 @@ def level6_2() -> int:
 
 
 if __name__ == '__main__':
-    start = time.time()
+    timer = RunTimer()
     print(f"Num visited fields, num loops: {level6_1()}, {level6_2()}")
-    end = time.time()
-    print(f"Runtime: {end - start}")
+    timer.print()
 
 
 def test_level6():

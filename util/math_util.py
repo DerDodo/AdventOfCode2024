@@ -21,9 +21,14 @@ class Direction(Enum):
     West = -1, 0
     NorthWest = -1, -1
 
+    x: int
+    y: int
     hash_value: int
 
     def __init__(self, x: int, y: int):
+        self.x = x
+        self.y = y
+        # runtime optimization
         self.hash_value = (y + 1) * 3 + x + 1
 
     def turn_right_90(self):
@@ -47,7 +52,7 @@ class Direction(Enum):
 
     def __mul__(self, other):
         if isinstance(other, int):
-            return self.value[0] * other, self.value[1] * other
+            return self.x * other, self.y * other
         raise TypeError(f"{other} is no int")
 
     def __hash__(self) -> int:
@@ -76,7 +81,7 @@ class Position:
         if isinstance(other, Position):
             return Position(self.x + other.x, self.y + other.y)
         if isinstance(other, Direction):
-            return Position(self.x + other.value[0], self.y + other.value[1])
+            return Position(self.x + other.x, self.y + other.y)
         if isinstance(other, int):
             return Position(self.x + other, self.y + other)
         if isinstance(other, tuple) and isinstance(other[0], int) and isinstance(other[1], int):
@@ -84,29 +89,24 @@ class Position:
         raise TypeError(f"{other} is no Position, Direction, int, or tuple[int, int]")
 
     def __iadd__(self, other):
-        if isinstance(other, Position):
+        if isinstance(other, Position) or isinstance(other, Direction):
             self.x += other.x
             self.y += other.y
-            return self
-        if isinstance(other, Direction):
-            self.x += other.value[0]
-            self.y += other.value[1]
-            return self
-        if isinstance(other, int):
+        elif isinstance(other, int):
             self.x += other
             self.y += other
-            return self
-        if isinstance(other, tuple) and isinstance(other[0], int) and isinstance(other[1], int):
+        elif isinstance(other, tuple) and isinstance(other[0], int) and isinstance(other[1], int):
             self.x += other[0]
             self.y += other[1]
-            return self
-        raise TypeError(f"{other} is no Position, Direction, int, or tuple[int, int]")
+        else:
+            raise TypeError(f"{other} is no Position, Direction, int, or tuple[int, int]")
+        return self
 
     def __sub__(self, other):
         if isinstance(other, Position):
             return Position(self.x - other.x, self.y - other.y)
         if isinstance(other, Direction):
-            return Position(self.x - other.value[0], self.y - other.value[1])
+            return Position(self.x - other.x, self.y - other.y)
         if isinstance(other, int):
             return Position(self.x - other, self.y - other)
         if isinstance(other, tuple) and isinstance(other[0], int) and isinstance(other[1], int):
@@ -114,29 +114,24 @@ class Position:
         raise TypeError(f"{other} is no Position, Direction, int, or tuple[int, int]")
 
     def __isub__(self, other):
-        if isinstance(other, Position):
+        if isinstance(other, Position) or isinstance(other, Direction):
             self.x -= other.x
             self.y -= other.y
-            return self
-        if isinstance(other, Direction):
-            self.x -= other.value[0]
-            self.y -= other.value[1]
-            return self
-        if isinstance(other, int):
+        elif isinstance(other, int):
             self.x -= other
             self.y -= other
-            return self
-        if isinstance(other, tuple) and isinstance(other[0], int) and isinstance(other[1], int):
+        elif isinstance(other, tuple) and isinstance(other[0], int) and isinstance(other[1], int):
             self.x -= other[0]
             self.y -= other[1]
-            return self
-        raise TypeError(f"{other} is no Position, Direction, int, or tuple[int, int]")
+        else:
+            raise TypeError(f"{other} is no Position, Direction, int, or tuple[int, int]")
+        return self
 
     def __mul__(self, other):
         if isinstance(other, Position):
             return Position(self.x * other.x, self.y * other.y)
         if isinstance(other, Direction):
-            return Position(self.x * other.value[0], self.y * other.value[1])
+            return Position(self.x * other.x, self.y * other.y)
         if isinstance(other, int):
             return Position(self.x * other, self.y * other)
         if isinstance(other, tuple) and isinstance(other[0], int) and isinstance(other[1], int):

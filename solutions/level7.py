@@ -1,37 +1,52 @@
-import math
 from operator import mul, add
 
 from util.file_util import read_input_file
 
 
 def count_digits(n):
-    return math.floor(math.log10(abs(n))) + 1
+    if n < 10:
+        return 1
+    elif n < 100:
+        return 2
+    else:
+        return 3
+    # runtime optimization
+    # return math.floor(math.log10(abs(n))) + 1
 
 
 def concatenate(a: int, b: int) -> int:
-    return a * int(math.pow(10, count_digits(b))) + b
+    for _ in range(count_digits(b)):
+        a *= 10
+    return a + b
+    # runtime optimization
+    # return a * int(math.pow(10, count_digits(b))) + b
 
 
 class Equation:
     result: int
     numbers: list[int]
+    len_numbers: int
 
     def __init__(self, input: str):
         split = input.split(": ")
         self.result = int(split[0])
         self.numbers = list(map(int, split[1].split(" ")))
+        # runtime optimization
+        self.len_numbers = len(self.numbers)
 
     def can_evaluate(self, operations: list) -> bool:
         return self._can_evaluate(operations, self.numbers[0])
 
     def _can_evaluate(self, operations: list, result: int, i: int = 1) -> bool:
-        if result > self.result:
-            return False
-        if i == len(self.numbers):
+        if i == self.len_numbers:
             return result == self.result
 
         for operation in operations:
             new_result = operation(result, self.numbers[i])
+
+            if new_result > self.result:
+                return False
+
             if self._can_evaluate(operations, new_result, i + 1):
                 return True
 

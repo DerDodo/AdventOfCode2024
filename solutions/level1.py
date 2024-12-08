@@ -29,6 +29,7 @@ def level1() -> tuple[int, int]:
         total_similarity += left[i] * right_amount[left[i]]
     return total_distance, total_similarity
 
+
 if __name__ == '__main__':
     print("Total distance: " + str(level1()))
 
