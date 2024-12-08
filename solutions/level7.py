@@ -1,5 +1,4 @@
 import math
-import time
 from enum import Enum
 
 from util.file_util import read_input_file
@@ -71,7 +70,6 @@ class Equation:
             evaluation = Evaluation(self.result, self.numbers, permutation)
             if evaluation.is_correct_with_incorrect_math():
                 return True
-
         return False
 
     def create_permutations(self, operations: list[Operation]) -> list[list[Operation]]:
@@ -86,6 +84,28 @@ class Equation:
             permutations = new_permutations
         return permutations
 
+    def can_evaluate_recursive(self, operations: list[Operation]) -> bool:
+        return self._can_evaluate_recursive(operations, self.numbers[0])
+
+    def _can_evaluate_recursive(self, operations: list[Operation], result: int, i: int = 1) -> bool:
+        if result > self.result:
+            return False
+        if i == len(self.numbers):
+            return result == self.result
+        for operation in operations:
+            if operation == Operation.Add:
+                new_result = result + self.numbers[i]
+                if self._can_evaluate_recursive(operations, new_result, i + 1):
+                    return True
+            elif operation == Operation.Multiply:
+                new_result = result * self.numbers[i]
+                if self._can_evaluate_recursive(operations, new_result, i + 1):
+                    return True
+            elif operation == Operation.Concatenate:
+                new_result = result * int(math.pow(10, count_digits(self.numbers[i]))) + self.numbers[i]
+                if self._can_evaluate_recursive(operations, new_result, i + 1):
+                    return True
+
 
 def parse_input_file() -> list[Equation]:
     return list(map(Equation, read_input_file(7)))
@@ -93,21 +113,15 @@ def parse_input_file() -> list[Equation]:
 
 def level7() -> tuple[int, int]:
     equations = parse_input_file()
+
     total_calibration_result_1 = 0
     total_calibration_result_2 = 0
-    calculation_times = []
     for equation in equations:
-        start = time.time()
-        if equation.can_evaluate([Operation.Add, Operation.Multiply]):
+        if equation.can_evaluate_recursive([Operation.Add, Operation.Multiply]):
             total_calibration_result_1 += equation.result
-        if equation.can_evaluate([Operation.Add, Operation.Multiply, Operation.Concatenate]):
+        if equation.can_evaluate_recursive([Operation.Add, Operation.Multiply, Operation.Concatenate]):
             total_calibration_result_2 += equation.result
-        end = time.time()
-        calculation_times.append((end - start, equation.result))
 
-    calculation_times.sort(reverse=True)
-    for i in range(min(len(calculation_times), 10)):
-        print(f"Calculation for {calculation_times[i][1]} took {calculation_times[i][0] * 1000}")
     return total_calibration_result_1, total_calibration_result_2
 
 
