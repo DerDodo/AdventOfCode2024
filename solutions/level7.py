@@ -97,8 +97,6 @@ def level7() -> tuple[int, int]:
     total_calibration_result_2 = 0
     calculation_times = []
     for equation in equations:
-        if equation.result != 384531509:
-            continue
         start = time.time()
         if equation.can_evaluate([Operation.Add, Operation.Multiply]):
             total_calibration_result_1 += equation.result
