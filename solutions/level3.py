@@ -39,6 +39,7 @@ def parse_input_file_with_conditionals() -> list[Multiplication]:
             do = False
         elif do:
             multiplications.append(Multiplication(command))
+
     return multiplications
 
 
@@ -52,13 +53,9 @@ def level3_2() -> int:
     return sum(map(lambda command: command.get_result(), commands))
 
 
-def level3() -> tuple[int, int]:
-    return level3_1(), level3_2()
-
-
 if __name__ == '__main__':
-    print("Calculation result: " + str(level3()))
+    print(f"Calculation result: {level3_1()}, {level3_2()}")
 
 
 def test_level3():
-    assert (161, 48) == level3()
+    assert (161, 48) == (level3_1(), level3_2())
