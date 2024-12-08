@@ -1,18 +1,16 @@
 from collections import defaultdict
 
 from util.file_util import read_input_file
-from util.math_util import Position
+from util.math_util import Position, Area
 
 
 def parse_input_file() -> tuple[Position, dict[str, list[Position]]]:
-    lines = read_input_file(8)
-    bounds = Position(len(lines[0]), len(lines))
+    field = Area(read_input_file(8))
     antennas = defaultdict(list)
-    for y in range(len(lines)):
-        for x in range(len(lines[0])):
-            if lines[y][x] != ".":
-                antennas[lines[y][x]].append(Position(x, y))
-    return bounds, antennas
+    for position in field:
+        if not field.safe_check(position, "."):
+            antennas[field[position]].append(position)
+    return field.bounds, antennas
 
 
 def level8() -> tuple[int, int]:

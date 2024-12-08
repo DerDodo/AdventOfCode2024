@@ -1,77 +1,38 @@
 from util.file_util import read_input_file
+from util.math_util import Position, Direction, Area
 
 
-def parse_input_file() -> list[str]:
-    return read_input_file(4)
+def parse_input_file() -> Area:
+    return Area(read_input_file(4))
 
 
-directions = [
-    [-1, -1],
-    [0, -1],
-    [1, -1],
-    [-1, 0],
-    [1, 0],
-    [-1, 1],
-    [0, 1],
-    [1, 1],
-]
+def is_mas(riddle: Area, position: Position, direction: Direction) -> bool:
+    return (riddle.safe_check(position, "M") and
+            riddle.safe_check(position + direction, "A") and
+            riddle.safe_check(position + direction * 2, "S"))
 
 
-def is_s(riddle: list[str], x: int, y: int) -> bool:
-    if x < 0 or y < 0 or x >= len(riddle[0]) or y >= len(riddle):
-        return False
-
-    return riddle[y][x] == "S"
-
-
-def is_as(riddle: list[str], x: int, y: int, dir_x: int, dir_y: int) -> bool:
-    if x < 0 or y < 0 or x >= len(riddle[0]) or y >= len(riddle) or riddle[y][x] != "A":
-        return False
-
-    return is_s(riddle, x + dir_x, y + dir_y)
-
-
-def is_mas(riddle: list[str], x: int, y: int, dir_x: int, dir_y: int) -> bool:
-    if x < 0 or y < 0 or x >= len(riddle[0]) or y >= len(riddle) or riddle[y][x] != "M":
-        return False
-
-    return is_as(riddle, x + dir_x, y + dir_y, dir_x, dir_y)
-
-
-def count_xmas(riddle: list[str]) -> int:
+def count_xmas(riddle: Area) -> int:
     num_xmas = 0
-    for y in range(0, len(riddle)):
-        for x in range(0, len(riddle[0])):
-            if riddle[y][x] == "X":
-                for direction in directions:
-                    num_xmas += 1 if is_mas(riddle, x + direction[0], y + direction[1], direction[0], direction[1]) else 0
+    for position in riddle:
+        if riddle.safe_check(position, "X"):
+            num_xmas += sum(is_mas(riddle, position + direction, direction) for direction in Direction)
     return num_xmas
 
 
-class Riddle:
-    text: list[str]
-
-    def __init__(self, text: list[str]):
-        self.text = text
-
-    def check(self, x: int, y: int, letter: str):
-        if x < 0 or y < 0 or x >= len(self.text[0]) or y >= len(self.text):
-            return False
-
-        return self.text[y][x] == letter
+def is_x_mas(riddle: Area, pos: Position):
+    return (riddle.safe_check(pos, "A") and
+            ((riddle.safe_check(pos + Direction.NorthWest, "M") and riddle.safe_check(pos + Direction.SouthEast, "S")) or
+             (riddle.safe_check(pos + Direction.SouthEast, "M") and riddle.safe_check(pos + Direction.NorthWest, "S"))) and
+            ((riddle.safe_check(pos + Direction.NorthEast, "M") and riddle.safe_check(pos + Direction.SouthWest, "S")) or
+             (riddle.safe_check(pos + Direction.SouthWest, "M") and riddle.safe_check(pos + Direction.NorthEast, "S"))))
 
 
-def count_x_mas(riddle_str: list[str]) -> int:
-    riddle = Riddle(riddle_str)
+def count_x_mas(riddle: Area) -> int:
     num_x_mas = 0
-    for y in range(1, len(riddle.text) - 1):
-        for x in range(1, len(riddle.text[0]) - 1):
-            if riddle.check(x, y, "A"):
-                if (((riddle.check(x - 1, y - 1, "M") and riddle.check(x + 1, y + 1, "S")) or
-                        (riddle.check(x + 1, y + 1, "M") and riddle.check(x - 1, y - 1, "S"))) and
-                        ((riddle.check(x + 1, y - 1, "M") and riddle.check(x - 1, y + 1, "S")) or
-                        (riddle.check(x - 1, y + 1, "M") and riddle.check(x + 1, y - 1, "S")))):
-                    num_x_mas += 1
+    for position in riddle:
+        if is_x_mas(riddle, position):
+            num_x_mas += 1
     return num_x_mas
 
 
@@ -85,4 +46,4 @@ if __name__ == '__main__':
 
 
 def test_level4():
-    assert (18, 9) == level4()
+    assert level4() == (18, 9)

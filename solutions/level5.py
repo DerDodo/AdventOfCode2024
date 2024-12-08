@@ -93,4 +93,4 @@ if __name__ == '__main__':
 
 
 def test_level5():
-    assert (143, 123) == level5()
+    assert level5() == (143, 123)

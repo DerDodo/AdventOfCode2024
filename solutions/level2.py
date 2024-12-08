@@ -60,4 +60,4 @@ if __name__ == '__main__':
 
 
 def test_level2():
-    assert (2, 4) == level2()
+    assert level2() == (2, 4)

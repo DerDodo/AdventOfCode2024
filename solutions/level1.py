@@ -34,4 +34,4 @@ if __name__ == '__main__':
 
 
 def test_level1():
-    assert (11, 31) == level1()
+    assert level1() == (11, 31)

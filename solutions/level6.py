@@ -1,7 +1,8 @@
+import time
 from enum import Enum
 
 from util.file_util import read_input_file
-from util.math_util import Position, Direction
+from util.math_util import Position, Direction, Area
 
 
 class Field(Enum):
@@ -10,29 +11,22 @@ class Field(Enum):
     GuardStart = "^"
 
 
-class Facility:
-    field: list[list[Field]]
-    bounds: Position
+class Facility(Area):
     guard_start: Position
 
     def __init__(self, lines: list[str]):
-        self.field = [list(map(Field, line)) for line in lines]
-        self.bounds = Position(len(lines[0]), len(lines))
+        super().__init__([list(map(Field, line)) for line in lines])
 
-        for y in range(0, len(self.field)):
-            for x in range(0, len(self.field[0])):
-                if self.field[y][x] == Field.GuardStart:
-                    self.guard_start = Position(x, y)
-                    return
-
-    def get(self, position: Position) -> Field:
-        return self.field[position.y][position.x]
+        for position in self:
+            if self[position] == Field.GuardStart:
+                self.guard_start = position
+                return
 
     def set_obstacle(self, position: Position):
-        self.field[position.y][position.x] = Field.Obstacle
+        self[position] = Field.Obstacle
 
     def remove_obstacle(self, position: Position):
-        self.field[position.y][position.x] = Field.Free
+        self[position] = Field.Free
 
 
 class Guard:
@@ -48,12 +42,11 @@ class Guard:
         self.left_facility = False
 
     def step(self):
-        new_position = Position(self.position.x, self.position.y)
-        new_position.move(self.direction)
-        if not new_position.is_in_bounds(self.facility.bounds):
+        new_position = Position(self.position.x + self.direction.value[0], self.position.y + self.direction.value[1])
+        if not self.facility.is_in_bounds(new_position):
             self.left_facility = True
-        elif self.facility.get(new_position) == Field.Obstacle:
-            self.direction = self.direction.turn_right()
+        elif self.facility[new_position] == Field.Obstacle:
+            self.direction = self.direction.turn_right_90()
         else:
             self.position = new_position
 
@@ -67,7 +60,7 @@ class Guard:
         return False
 
     def get_history_hash(self) -> int:
-        return self.position.get_hash() * 10 + self.direction.value
+        return self.position.__hash__() * 10 + self.direction.__hash__()
 
 
 def parse_input_file() -> tuple[Facility, Guard]:
@@ -81,7 +74,7 @@ def level6_1() -> int:
     _, guard = parse_input_file()
     positions = set()
     while not guard.left_facility:
-        positions.add(guard.position.get_hash())
+        positions.add(guard.position)
         guard.step()
     return len(positions)
 
@@ -96,17 +89,16 @@ def level6_2() -> int:
         start_direction = original_guard.direction
         original_guard.step()
 
-        position_hash = original_guard.position.get_hash()
-        if original_guard.position != original_facility.guard_start and position_hash not in tried_obstacles:
+        if original_guard.position != original_facility.guard_start and original_guard.position not in tried_obstacles:
             trial_guard = Guard(trial_facility)
             trial_facility.set_obstacle(original_guard.position)
-            tried_obstacles.add(position_hash)
+            tried_obstacles.add(original_guard.position)
 
             trial_guard.position = start_position
             trial_guard.direction = start_direction
 
             if trial_guard.will_get_stuck():
-                found_obstacles.add(position_hash)
+                found_obstacles.add(original_guard.position)
 
             trial_facility.remove_obstacle(original_guard.position)
 
@@ -114,8 +106,11 @@ def level6_2() -> int:
 
 
 if __name__ == '__main__':
+    start = time.time()
     print(f"Num visited fields, num loops: {level6_1()}, {level6_2()}")
+    end = time.time()
+    print(f"Runtime: {end - start}")
 
 
 def test_level6():
-    assert (41, 6) == (level6_1(), level6_2())
+    assert (level6_1(), level6_2()) == (41, 6)

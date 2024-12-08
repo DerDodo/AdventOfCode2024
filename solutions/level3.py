@@ -58,4 +58,4 @@ if __name__ == '__main__':
 
 
 def test_level3():
-    assert (161, 48) == (level3_1(), level3_2())
+    assert (level3_1(), level3_2()) == (161, 48)
