@@ -1,5 +1,4 @@
 from util.file_util import read_input_file
-from util.run_util import RunTimer
 
 FREE = -1
 
