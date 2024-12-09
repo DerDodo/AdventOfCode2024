@@ -33,7 +33,7 @@ def level1() -> tuple[int, int]:
 
 if __name__ == '__main__':
     timer = RunTimer()
-    print("Total distance: " + str(level1()))
+    print(f"Total distance: {level1()}")
     timer.print()
 
 

@@ -44,7 +44,7 @@ def level4() -> tuple[int, int]:
 
 if __name__ == '__main__':
     timer = RunTimer()
-    print("Num XMAS: " + str(level4()))
+    print(f"Num XMAS: {level4()}")
     timer.print()
 
 

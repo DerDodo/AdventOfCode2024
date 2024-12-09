@@ -43,7 +43,7 @@ def level8() -> tuple[int, int]:
 
 if __name__ == '__main__':
     timer = RunTimer()
-    print("Num anti nodes: " + str(level8()))
+    print(f"Num anti nodes: {level8()}")
     timer.print()
 
 

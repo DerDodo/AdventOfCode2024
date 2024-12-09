@@ -67,7 +67,7 @@ def level7() -> tuple[int, int]:
 
 if __name__ == '__main__':
     timer = RunTimer()
-    print("Total calibration result: " + str(level7()))
+    print(f"Total calibration result: {level7()}")
     timer.print()
 
 

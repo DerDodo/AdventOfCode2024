@@ -91,7 +91,7 @@ def level5() -> tuple[int, int]:
 
 if __name__ == '__main__':
     timer = RunTimer()
-    print("Middle page values: " + str(level5()))
+    print(f"Middle page values: {level5()}")
     timer.print()
 
 

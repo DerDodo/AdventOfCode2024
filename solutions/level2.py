@@ -58,7 +58,7 @@ def level2() -> tuple[int, int]:
 
 if __name__ == '__main__':
     timer = RunTimer()
-    print("Num safe reports: " + str(level2()))
+    print(f"Num safe reports: {level2()}")
     timer.print()
 
 
