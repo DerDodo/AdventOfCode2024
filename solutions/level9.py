@@ -1,4 +1,5 @@
 from util.file_util import read_input_file
+from util.run_util import RunTimer
 
 FREE = -1
 
@@ -121,7 +122,9 @@ def level9() -> tuple[int, int]:
 
 
 if __name__ == '__main__':
+    timer = RunTimer()
     print(f"Checksum: {level9()}")
+    timer.print()
 
 
 def test_level9():

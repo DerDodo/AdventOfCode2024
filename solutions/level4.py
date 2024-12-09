@@ -1,5 +1,6 @@
 from util.file_util import read_input_file
 from util.math_util import Position, Direction, Area
+from util.run_util import RunTimer
 
 
 def parse_input_file() -> Area:
@@ -42,7 +43,9 @@ def level4() -> tuple[int, int]:
 
 
 if __name__ == '__main__':
+    timer = RunTimer()
     print("Num XMAS: " + str(level4()))
+    timer.print()
 
 
 def test_level4():

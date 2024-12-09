@@ -1,6 +1,7 @@
 from operator import mul, add
 
 from util.file_util import read_input_file
+from util.run_util import RunTimer
 
 
 def count_digits(n):
@@ -65,7 +66,9 @@ def level7() -> tuple[int, int]:
 
 
 if __name__ == '__main__':
+    timer = RunTimer()
     print("Total calibration result: " + str(level7()))
+    timer.print()
 
 
 def test_level7():

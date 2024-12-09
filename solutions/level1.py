@@ -1,6 +1,7 @@
 from collections import defaultdict
 
 from util.file_util import read_input_file
+from util.run_util import RunTimer
 
 
 def parse_input_file() -> tuple[list[int], list[int], dict[int, int]]:
@@ -31,7 +32,9 @@ def level1() -> tuple[int, int]:
 
 
 if __name__ == '__main__':
+    timer = RunTimer()
     print("Total distance: " + str(level1()))
+    timer.print()
 
 
 def test_level1():

@@ -1,4 +1,5 @@
 from util.file_util import read_input_file
+from util.run_util import RunTimer
 
 
 class PrintingRules:
@@ -89,7 +90,9 @@ def level5() -> tuple[int, int]:
 
 
 if __name__ == '__main__':
+    timer = RunTimer()
     print("Middle page values: " + str(level5()))
+    timer.print()
 
 
 def test_level5():

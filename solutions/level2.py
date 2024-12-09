@@ -1,4 +1,5 @@
 from util.file_util import read_input_file
+from util.run_util import RunTimer
 
 
 def is_valid_recursive(report: list[int], num_allowed_errors: int, ascending: bool) -> bool:
@@ -56,7 +57,9 @@ def level2() -> tuple[int, int]:
 
 
 if __name__ == '__main__':
+    timer = RunTimer()
     print("Num safe reports: " + str(level2()))
+    timer.print()
 
 
 def test_level2():

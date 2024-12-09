@@ -1,6 +1,7 @@
 import re
 
 from util.file_util import read_input_file
+from util.run_util import RunTimer
 
 
 class Multiplication:
@@ -54,7 +55,9 @@ def level3_2() -> int:
 
 
 if __name__ == '__main__':
+    timer = RunTimer()
     print(f"Calculation result: {level3_1()}, {level3_2()}")
+    timer.print()
 
 
 def test_level3():

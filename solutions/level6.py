@@ -2,6 +2,7 @@ from enum import Enum
 
 from util.file_util import read_input_file
 from util.math_util import Position, Direction, Area
+from util.run_util import RunTimer
 
 
 class Field(Enum):
@@ -105,7 +106,9 @@ def level6_2() -> int:
 
 
 if __name__ == '__main__':
+    timer = RunTimer()
     print(f"Num visited fields, num loops: {level6_1()}, {level6_2()}")
+    timer.print()
 
 
 def test_level6():

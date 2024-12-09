@@ -2,6 +2,7 @@ from collections import defaultdict
 
 from util.file_util import read_input_file
 from util.math_util import Position, Area
+from util.run_util import RunTimer
 
 
 def parse_input_file() -> tuple[Position, dict[str, list[Position]]]:
@@ -41,7 +42,9 @@ def level8() -> tuple[int, int]:
 
 
 if __name__ == '__main__':
+    timer = RunTimer()
     print("Num anti nodes: " + str(level8()))
+    timer.print()
 
 
 def test_level8():
