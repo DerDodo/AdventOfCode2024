@@ -27,8 +27,8 @@ class Equation:
     numbers: list[int]
     len_numbers: int
 
-    def __init__(self, input: str):
-        split = input.split(": ")
+    def __init__(self, line: str):
+        split = line.split(": ")
         self.result = int(split[0])
         self.numbers = list(map(int, split[1].split(" ")))
         # runtime optimization

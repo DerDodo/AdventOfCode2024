@@ -1,7 +1,7 @@
 from util.file_util import read_input_file
 
 
-def is_valid_recursive(report: list[int], num_allowed_errors: int, is_ascending: bool) -> bool:
+def is_valid_recursive(report: list[int], num_allowed_errors: int, ascending: bool) -> bool:
     if num_allowed_errors < 0:
         return False
     elif len(report) == 1:
@@ -10,11 +10,11 @@ def is_valid_recursive(report: list[int], num_allowed_errors: int, is_ascending:
         return False
 
     distance = report[0] - report[1]
-    if ((is_ascending and (distance < -3 or distance > -1)) or
-            (not is_ascending and (distance < 1 or distance > 3))):
-        return is_valid_recursive([report[0]] + report[2:], num_allowed_errors - 1, is_ascending)
+    if ((ascending and (distance < -3 or distance > -1)) or
+            (not ascending and (distance < 1 or distance > 3))):
+        return is_valid_recursive([report[0]] + report[2:], num_allowed_errors - 1, ascending)
     else:
-        return is_valid_recursive(report[1:], num_allowed_errors, is_ascending)
+        return is_valid_recursive(report[1:], num_allowed_errors, ascending)
 
 
 def is_ascending(report: list[int]) -> bool:
