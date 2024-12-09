@@ -29,7 +29,7 @@ def parse_input_file_with_conditionals() -> list[Multiplication]:
     lines = read_input_file(3)
     commands = []
     for line in lines:
-        commands += re.findall("mul\(\d{1,3},\d{1,3}\)|do\(\)|don't\(\)", line)
+        commands += re.findall("mul\\(\\d{1,3},\\d{1,3}\\)|do\\(\\)|don't\\(\\)", line)
 
     multiplications = []
     do = True
