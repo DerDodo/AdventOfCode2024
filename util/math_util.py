@@ -7,7 +7,11 @@ def clamp(n):
 
 def transpose(l):
     # https://www.geeksforgeeks.org/python-transpose-elements-of-two-dimensional-list/
-    return list(map(list, zip(*l)))
+    return list(map(lambda x: list(x), zip(*l)))
+
+
+def create_2d_list(length: int, height: int, value) -> list[list]:
+    return [[value] * length for _ in range(height)]
 
 
 class Direction(Enum):
@@ -29,6 +33,25 @@ class Direction(Enum):
         self.y = y
         # runtime optimization
         self.hash_value = (y + 1) * 3 + x + 1
+
+    def turn_left_90(self):
+        match self:
+            case Direction.North:
+                return Direction.West
+            case Direction.NorthEast:
+                return Direction.NorthWest
+            case Direction.East:
+                return Direction.North
+            case Direction.SouthEast:
+                return Direction.NorthEast
+            case Direction.South:
+                return Direction.East
+            case Direction.SouthWest:
+                return Direction.SouthEast
+            case Direction.West:
+                return Direction.South
+            case Direction.NorthWest:
+                return Direction.SouthWest
 
     def turn_right_90(self):
         match self:
@@ -56,6 +79,63 @@ class Direction(Enum):
 
     def __hash__(self) -> int:
         return self.hash_value
+
+    def __getitem__(self, index: int) -> int:
+        if index == 0:
+            return self.x
+        elif index == 1:
+            return self.y
+        else:
+            raise IndexError(f"Invalid index {index}")
+
+    def __setitem__(self, index: int, value: int):
+        if index == 0:
+            self.x = value
+        elif index == 1:
+            self.y = value
+        else:
+            raise IndexError(f"Invalid index {index}")
+
+
+def is_turn_right(old: Direction, new: Direction) -> bool:
+    match old:
+        case Direction.North:
+            return new == Direction.East
+        case Direction.NorthEast:
+            return new == Direction.SouthEast
+        case Direction.East:
+            return new == Direction.South
+        case Direction.SouthEast:
+            return new == Direction.SouthWest
+        case Direction.South:
+            return new == Direction.West
+        case Direction.SouthWest:
+            return new == Direction.NorthWest
+        case Direction.West:
+            return new == Direction.North
+        case Direction.NorthWest:
+            return new == Direction.NorthEast
+
+
+def is_turn_left(old: Direction, new: Direction) -> bool:
+    match old:
+        case Direction.North:
+            return new == Direction.West
+        case Direction.NorthEast:
+            return new == Direction.NorthWest
+        case Direction.East:
+            return new == Direction.North
+        case Direction.SouthEast:
+            return new == Direction.NorthEast
+        case Direction.South:
+            return new == Direction.East
+        case Direction.SouthWest:
+            return new == Direction.SouthEast
+        case Direction.West:
+            return new == Direction.South
+        case Direction.NorthWest:
+            return new == Direction.SouthWest
+
 
 
 class Position:
@@ -137,6 +217,9 @@ class Position:
             return Position(self.x * other[0], self.y * other[1])
         raise TypeError(f"{other} is no Position, Direction, int, or tuple[int, int]")
 
+    def __neg__(self):
+        return Position(-self.x, -self.y)
+
     def __hash__(self):
         return self.y * 10000000 + self.x
 
@@ -166,6 +249,9 @@ class Position:
         else:
             raise IndexError(f"Invalid index {index}")
 
+    def copy(self):
+        return Position(self.x, self.y)
+
 
 class Area:
     field: list
@@ -191,3 +277,32 @@ class Area:
 
     def is_in_bounds(self, position: Position) -> bool:
         return position.is_in_bounds(self.bounds)
+
+    def print(self):
+        for line in self.field:
+            if isinstance(self.field[0][0], Enum):
+                print("".join(map(lambda x: x.value, line)))
+            else:
+                print("".join(line))
+
+    def count(self, value) -> int:
+        return sum(map(lambda line: sum([1 if x == value else 0 for x in line]), self.field))
+
+    def flood_fill(self, start: Position, value):
+        old_value = self[start]
+        if old_value == value:
+            return
+
+        fields_to_fill = set()
+        fields_to_fill.add(start)
+        while fields_to_fill:
+            position = fields_to_fill.pop()
+            self[position] = value
+            if self[position + Direction.North] == old_value:
+                fields_to_fill.add(position + Direction.North)
+            if self[position + Direction.East] == old_value:
+                fields_to_fill.add(position + Direction.East)
+            if self[position + Direction.South] == old_value:
+                fields_to_fill.add(position + Direction.South)
+            if self[position + Direction.West] == old_value:
+                fields_to_fill.add(position + Direction.West)
