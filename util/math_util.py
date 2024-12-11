@@ -1,4 +1,12 @@
+import math
 from enum import Enum
+
+
+def count_digits(n) -> int:
+    if n == 0:
+        return 1
+
+    return math.floor(math.log10(abs(n))) + 1
 
 
 def clamp(n):
