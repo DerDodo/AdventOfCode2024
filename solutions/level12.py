@@ -1,7 +1,7 @@
 from collections import defaultdict
 
 from util.file_util import read_input_file_id
-from util.math_util import Area, Direction, position_and_direction_hash, Position
+from util.math_util import Area, Direction
 from util.run_util import RunTimer
 
 
@@ -35,21 +35,30 @@ def calc_area_fences(area: Area, value: int) -> tuple[int, dict[int, dict[Direct
     return sum_area, fences
 
 
+def calc_fence_without_discount(fences: dict[int, dict[Direction, list[int]]]) -> int:
+    return sum(map(lambda dim1: sum(map(lambda d: len(fences[dim1][d]), fences[dim1])), fences))
+
+
+def calc_fence_with_discount(fences: dict[int, dict[Direction, list[int]]]) -> int:
+    sides = 0
+    for dimension_1 in fences:
+        for direction in fences[dimension_1]:
+            last_fence = -10000
+            for dimension_2 in fences[dimension_1][direction]:
+                if dimension_2 != last_fence + 1:
+                    sides += 1
+                last_fence = dimension_2
+    return sides
+
+
 def calc_fence_cost(area: Area, value: int, bulk_discount: bool) -> int:
     sum_area, fences = calc_area_fences(area, value)
 
     if bulk_discount:
-        sides = 0
-        for dimension_1 in fences:
-            for direction in fences[dimension_1]:
-                last_fence = -10000
-                for dimension_2 in fences[dimension_1][direction]:
-                    if dimension_2 != last_fence + 1:
-                        sides += 1
-                    last_fence = dimension_2
-        return sum_area * sides
+        return sum_area * calc_fence_with_discount(fences)
     else:
-        return sum_area * sum(map(lambda dim1: sum(map(lambda d: len(fences[dim1][d]), fences[dim1])), fences))
+        return sum_area * calc_fence_without_discount(fences)
+
 
 def level12(file_id: int, bulk_discount: bool) -> int:
     area = parse_input_file(file_id)
