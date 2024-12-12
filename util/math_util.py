@@ -261,12 +261,18 @@ class Position:
         return Position(self.x, self.y)
 
 
+def position_and_direction_hash(position: Position, direction: Direction) -> int:
+    return position.__hash__() * 10 + direction.__hash__()
+
+
 class Area:
     field: list
     bounds: Position
 
     def __init__(self, field: list):
         self.field = field
+        if isinstance(field[0], str):
+            self.field = list(map(lambda line: list(line), field))
         self.bounds = Position(len(field[0]), len(field))
 
     def __getitem__(self, position: Position):
@@ -306,11 +312,17 @@ class Area:
         while fields_to_fill:
             position = fields_to_fill.pop()
             self[position] = value
-            if self[position + Direction.North] == old_value:
+            if self.safe_check(position + Direction.North, old_value):
                 fields_to_fill.add(position + Direction.North)
-            if self[position + Direction.East] == old_value:
+            if self.safe_check(position + Direction.East, old_value):
                 fields_to_fill.add(position + Direction.East)
-            if self[position + Direction.South] == old_value:
+            if self.safe_check(position + Direction.South, old_value):
                 fields_to_fill.add(position + Direction.South)
-            if self[position + Direction.West] == old_value:
+            if self.safe_check(position + Direction.West, old_value):
                 fields_to_fill.add(position + Direction.West)
+
+    def get_value_set(self) -> set:
+        result = set()
+        for position in self:
+            result.add(self[position])
+        return result

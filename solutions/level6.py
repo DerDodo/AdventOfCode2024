@@ -1,7 +1,7 @@
 from enum import Enum
 
 from util.file_util import read_input_file
-from util.math_util import Position, Direction, Area
+from util.math_util import Position, Direction, Area, position_and_direction_hash
 from util.run_util import RunTimer
 
 
@@ -60,7 +60,7 @@ class Guard:
         return False
 
     def __hash__(self) -> int:
-        return self.position.__hash__() * 10 + self.direction.__hash__()
+        return position_and_direction_hash(self.position, self.direction)
 
 
 def parse_input_file() -> tuple[Facility, Guard]:
