@@ -19,9 +19,9 @@ class ClawMachine:
         return Position(x, y)
 
     def calc_min_tokens(self, offset: int = 0) -> int:
-        # Add the two vectors to each other, simplify the formula and restructure. Fortunately it returned the minimum result already.
         target_x = self.price.x + offset
         target_y = self.price.y + offset
+        # Add the two vectors, simplify the formula, and restructure. Fortunately it returned the minimum result already.
         num_a = (target_y * self.button_b.x - self.button_b.y * target_x) / (self.button_a.y * self.button_b.x - self.button_b.y * self.button_a.x)
         if num_a == int(num_a):
             num_b = (target_x - self.button_a.x * num_a) / self.button_b.x
