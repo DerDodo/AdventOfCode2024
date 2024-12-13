@@ -8,11 +8,12 @@ class ClawMachine:
     price: Position
 
     def __init__(self, lines: list[str]):
-        self.button_a = self.parse_input(lines[0], "+")
-        self.button_b = self.parse_input(lines[1], "+")
-        self.price = self.parse_input(lines[2], "=")
+        self.button_a = self._parse_input(lines[0], "+")
+        self.button_b = self._parse_input(lines[1], "+")
+        self.price = self._parse_input(lines[2], "=")
 
-    def parse_input(self, line: str, delimiter: str) -> Position:
+    @staticmethod
+    def _parse_input(line: str, delimiter: str) -> Position:
         parts = line.split(",")
         x = int(parts[0][parts[0].find(delimiter)+1:])
         y = int(parts[1][parts[1].find(delimiter)+1:])
@@ -21,7 +22,9 @@ class ClawMachine:
     def calc_min_tokens(self, offset: int = 0) -> int:
         target_x = self.price.x + offset
         target_y = self.price.y + offset
-        # Add the two vectors, simplify the formula, and restructure. Fortunately it returned the minimum result already.
+        # Add the two vectors, simplify the formula, and restructure.
+        # There can only be multiple solutions if the two vectors have the same steepness.
+        # Fortunately this didn't happen - so no edge case management here.
         num_a = (target_y * self.button_b.x - self.button_b.y * target_x) / (self.button_a.y * self.button_b.x - self.button_b.y * self.button_a.x)
         if num_a == int(num_a):
             num_b = (target_x - self.button_a.x * num_a) / self.button_b.x
