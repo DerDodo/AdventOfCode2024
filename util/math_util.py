@@ -165,9 +165,7 @@ class Position:
         return True
 
     def __add__(self, other):
-        if isinstance(other, Position):
-            return Position(self.x + other.x, self.y + other.y)
-        if isinstance(other, Direction):
+        if isinstance(other, Position) or isinstance(other, Direction):
             return Position(self.x + other.x, self.y + other.y)
         if isinstance(other, int):
             return Position(self.x + other, self.y + other)
@@ -190,9 +188,7 @@ class Position:
         return self
 
     def __sub__(self, other):
-        if isinstance(other, Position):
-            return Position(self.x - other.x, self.y - other.y)
-        if isinstance(other, Direction):
+        if isinstance(other, Position) or isinstance(other, Direction):
             return Position(self.x - other.x, self.y - other.y)
         if isinstance(other, int):
             return Position(self.x - other, self.y - other)
@@ -215,15 +211,50 @@ class Position:
         return self
 
     def __mul__(self, other):
-        if isinstance(other, Position):
-            return Position(self.x * other.x, self.y * other.y)
-        if isinstance(other, Direction):
+        if isinstance(other, Position) or isinstance(other, Direction):
             return Position(self.x * other.x, self.y * other.y)
         if isinstance(other, int):
             return Position(self.x * other, self.y * other)
         if isinstance(other, tuple) and isinstance(other[0], int) and isinstance(other[1], int):
             return Position(self.x * other[0], self.y * other[1])
         raise TypeError(f"{other} is no Position, Direction, int, or tuple[int, int]")
+
+    def __imul__(self, other):
+        if isinstance(other, Position) or isinstance(other, Direction):
+            self.x *= other.x
+            self.y *= other.y
+        elif isinstance(other, int):
+            self.x *= other
+            self.y *= other
+        elif isinstance(other, tuple) and isinstance(other[0], int) and isinstance(other[1], int):
+            self.x *= other[0]
+            self.y *= other[1]
+        else:
+            raise TypeError(f"{other} is no Position, int, or tuple[int, int]")
+        return self
+
+    def __floordiv__(self, other):
+        if isinstance(other, Position):
+            return Position(self.x // other.x, self.y // other.y)
+        if isinstance(other, int):
+            return Position(self.x // other, self.y // other)
+        if isinstance(other, tuple) and isinstance(other[0], int) and isinstance(other[1], int):
+            return Position(self.x // other[0], self.y // other[1])
+        raise TypeError(f"{other} is no Position, int, or tuple[int, int]")
+
+    def __ifloordiv__(self, other):
+        if isinstance(other, Position):
+            self.x //= other.x
+            self.y //= other.y
+        elif isinstance(other, int):
+            self.x //= other
+            self.y //= other
+        elif isinstance(other, tuple) and isinstance(other[0], int) and isinstance(other[1], int):
+            self.x //= other[0]
+            self.y //= other[1]
+        else:
+            raise TypeError(f"{other} is no Position, int, or tuple[int, int]")
+        return self
 
     def __neg__(self):
         return Position(-self.x, -self.y)
@@ -257,6 +288,15 @@ class Position:
         else:
             raise IndexError(f"Invalid index {index}")
 
+    def __mod__(self, other):
+        if isinstance(other, Position):
+            return Position(self.x % other.x, self.y % other.y)
+        if isinstance(other, int):
+            return Position(self.x & other, self.y & other)
+        if isinstance(other, tuple) and isinstance(other[0], int) and isinstance(other[1], int):
+            return Position(self.x & other[0], self.y & other[1])
+        raise TypeError(f"{other} is no Position, int, or tuple[int, int]")
+
     def copy(self):
         return Position(self.x, self.y)
 
@@ -275,6 +315,10 @@ class Area:
             self.field = list(map(lambda line: list(line), field))
         self.bounds = Position(len(field[0]), len(field))
 
+    @staticmethod
+    def from_bounds_and_value(bounds: Position, value):
+        return Area(create_2d_list(bounds.x, bounds.y, value))
+
     def __getitem__(self, position: Position):
         return self.field[position.y][position.x]
 
@@ -292,12 +336,11 @@ class Area:
     def is_in_bounds(self, position: Position) -> bool:
         return position.is_in_bounds(self.bounds)
 
-    def print(self):
-        for line in self.field:
-            if isinstance(self.field[0][0], Enum):
-                print("".join(map(lambda x: x.value, line)))
-            else:
-                print("".join(line))
+    def __str__(self):
+        if isinstance(self.field[0][0], Enum):
+            return "\n".join(map(lambda line: "".join(map(lambda x: x.value, line)), self.field))
+        else:
+            return "\n".join(map(lambda line: "".join(line), self.field))
 
     def count(self, value) -> int:
         return sum(map(lambda line: sum([1 if x == value else 0 for x in line]), self.field))
