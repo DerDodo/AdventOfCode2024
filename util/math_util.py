@@ -42,6 +42,19 @@ class Direction(Enum):
         # runtime optimization
         self.hash_value = (y + 1) * 3 + x + 1
 
+    @staticmethod
+    def from_arrow(arrow: str):
+        if arrow == "^":
+            return Direction.North
+        elif arrow == ">":
+            return Direction.East
+        elif arrow == "v":
+            return Direction.South
+        elif arrow == "<":
+            return Direction.West
+        else:
+            raise ValueError(f"Invalid direction arrow '{arrow}'")
+
     def turn_left_90(self):
         match self:
             case Direction.North:
@@ -369,3 +382,8 @@ class Area:
         for position in self:
             result.add(self[position])
         return result
+
+    def find_first(self, value) -> Position:
+        for position in self:
+            if self[position] == value:
+                return position
