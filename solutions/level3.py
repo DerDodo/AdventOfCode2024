@@ -16,16 +16,7 @@ class Multiplication:
         return self.left * self.right
 
 
-def parse_input_file_with_no_conditionals() -> list[Multiplication]:
-    lines = read_input_file(3)
-    commands = []
-    for line in lines:
-        commands += re.findall("mul\\(\\d{1,3},\\d{1,3}\\)", line)
-
-    return list(map(Multiplication, commands))
-
-
-def parse_input_file_with_conditionals() -> list[Multiplication]:
+def parse_input_file(use_conditions: bool) -> list[Multiplication]:
     lines = read_input_file(3)
     commands = []
     for line in lines:
@@ -38,27 +29,26 @@ def parse_input_file_with_conditionals() -> list[Multiplication]:
             do = True
         elif command == "don't()":
             do = False
-        elif do:
+        elif do or not use_conditions:
             multiplications.append(Multiplication(command))
 
     return multiplications
 
 
-def level3_1() -> int:
-    commands = parse_input_file_with_no_conditionals()
+def do_level3(use_condition: bool) -> int:
+    commands = parse_input_file(use_condition)
     return sum(map(lambda command: command.get_result(), commands))
 
 
-def level3_2() -> int:
-    commands = parse_input_file_with_conditionals()
-    return sum(map(lambda command: command.get_result(), commands))
+def level3() -> tuple[int, int]:
+    return do_level3(False), do_level3(True)
 
 
 if __name__ == '__main__':
     timer = RunTimer()
-    print(f"Calculation result: {level3_1()}, {level3_2()}")
+    print(f"Calculation result: {level3()}")
     timer.print()
 
 
 def test_level3():
-    assert (level3_1(), level3_2()) == (161, 48)
+    assert (level3()) == (161, 48)

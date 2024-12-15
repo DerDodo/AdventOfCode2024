@@ -4,6 +4,7 @@ from util.file_util import read_input_file
 from util.run_util import RunTimer
 
 
+# runtime optimization
 def count_digits(n):
     if n < 10:
         return 1
@@ -11,8 +12,6 @@ def count_digits(n):
         return 2
     else:
         return 3
-    # runtime optimization
-    # return math.floor(math.log10(abs(n))) + 1
 
 
 def concatenate(a: int, b: int) -> int:

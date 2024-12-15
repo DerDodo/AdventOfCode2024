@@ -1,6 +1,8 @@
+from util.data_util import split_input_when_empty
 from util.file_util import read_input_file
 from util.math_util import Position
 from util.run_util import RunTimer
+
 
 class ClawMachine:
     button_a: Position
@@ -35,10 +37,8 @@ class ClawMachine:
 
 def parse_input_file() -> list[ClawMachine]:
     lines = read_input_file(13)
-    claw_machines = []
-    for i in range(0, len(lines), 4):
-        claw_machines.append(ClawMachine(lines[i:i+3]))
-    return claw_machines
+    parts = split_input_when_empty(lines)
+    return list(map(ClawMachine, parts))
 
 
 def level13() -> tuple[int, int]:

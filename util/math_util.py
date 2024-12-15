@@ -13,15 +13,6 @@ def clamp(n):
     return max(-1, min(1, n))
 
 
-def transpose(l):
-    # https://www.geeksforgeeks.org/python-transpose-elements-of-two-dimensional-list/
-    return list(map(lambda x: list(x), zip(*l)))
-
-
-def create_2d_list(length: int, height: int, value) -> list[list]:
-    return [[value] * length for _ in range(height)]
-
-
 class Direction(Enum):
     North = 0, -1
     NorthEast = 1, -1

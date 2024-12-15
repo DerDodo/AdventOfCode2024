@@ -16,12 +16,16 @@ def parse_input_file() -> list[int]:
         read_file = not read_file
     return disc
 
+
 def find_next_free_space(disc: list[int]) -> int:
     for i in range(find_next_free_space.start, len(disc)):
         if disc[i] == FREE:
             find_next_free_space.start = i + 1
             return i
+
+
 find_next_free_space.start = 0
+
 
 def rearrange_disc_blocks(disc: list[int]):
     for i in range(len(disc) - 1, -1, -1):
@@ -35,7 +39,9 @@ def rearrange_disc_blocks(disc: list[int]):
         disc[next_free_space] = disc[i]
         disc[i] = FREE
 
-type FreeSpaceMap = list[tuple[int, int]]
+
+FreeSpaceMap = list[tuple[int, int]]
+
 
 def map_free_space(disc:list[int]) -> FreeSpaceMap:
     free_spaces: FreeSpaceMap = []
@@ -51,17 +57,20 @@ def map_free_space(disc:list[int]) -> FreeSpaceMap:
             i += 1
     return free_spaces
 
+
 def find_first_free_space_for_file(free_spaces: FreeSpaceMap, file_size: int) -> int | None:
     for i in range(len(free_spaces)):
         if free_spaces[i][1] >= file_size:
             return i
     return None
 
+
 def update_free_space_map(free_spaces: FreeSpaceMap, used_space_index: int, file_size: int):
     if free_spaces[used_space_index][1] == file_size:
         free_spaces.pop(used_space_index)
     else:
         free_spaces[used_space_index] = (free_spaces[used_space_index][0] + file_size, free_spaces[used_space_index][1] - file_size)
+
 
 def rearrange_disc_files(disc: list[int]):
     free_spaces = map_free_space(disc)
@@ -103,22 +112,15 @@ def calc_checksum(disc: list[int]) -> int:
     return checksum
 
 
-def level9_1() -> int:
+def do_level9(rearrange_fun) -> int:
     disc = parse_input_file()
-    rearrange_disc_blocks(disc)
-    checksum = calc_checksum(disc)
-    return checksum
-
-
-def level9_2() -> int:
-    disc = parse_input_file()
-    rearrange_disc_files(disc)
+    rearrange_fun(disc)
     checksum = calc_checksum(disc)
     return checksum
 
 
 def level9() -> tuple[int, int]:
-    return level9_1(), level9_2()
+    return do_level9(rearrange_disc_blocks), do_level9(rearrange_disc_files)
 
 
 if __name__ == '__main__':

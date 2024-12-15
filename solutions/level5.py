@@ -1,3 +1,4 @@
+from util.data_util import split_input_when_empty
 from util.file_util import read_input_file
 from util.run_util import RunTimer
 
@@ -7,17 +8,9 @@ class PrintingRules:
     page_lists: list[list[int]]
 
     def __init__(self, lines: list[str]):
-        self.orderings = []
-        self.page_lists = []
-
-        read_orderings = True
-        for line in lines:
-            if line == "":
-                read_orderings = False
-            elif read_orderings:
-                self.orderings.append(list(map(int, line.split("|"))))
-            else:
-                self.page_lists.append(list(map(int, line.split(","))))
+        parts = split_input_when_empty(lines)
+        self.orderings = list(map(lambda line: list(map(int, line.split("|"))), parts[0]))
+        self.page_lists = list(map(lambda line: list(map(int, line.split(","))), parts[1]))
 
 
 class PrinterRun:

@@ -1,5 +1,6 @@
 from enum import Enum
 
+from util.data_util import convert_string_list
 from util.file_util import read_input_file
 from util.math_util import Position, Direction, Area, position_and_direction_hash
 from util.run_util import RunTimer
@@ -15,12 +16,8 @@ class Facility(Area):
     guard_start: Position
 
     def __init__(self, lines: list[str]):
-        super().__init__([list(map(Field, line)) for line in lines])
-
-        for position in self:
-            if self[position] == Field.GuardStart:
-                self.guard_start = position
-                return
+        super().__init__(convert_string_list(lines, Field))
+        self.guard_start = self.find_first(Field.GuardStart)
 
     def set_obstacle(self, position: Position):
         self[position] = Field.Obstacle

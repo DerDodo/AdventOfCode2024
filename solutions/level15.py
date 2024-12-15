@@ -1,6 +1,7 @@
 from collections import defaultdict
 from enum import Enum
 
+from util.data_util import convert_string_list, convert_string, split_input_when_empty
 from util.file_util import read_input_file_id
 from util.math_util import Position, Area, Direction
 from util.run_util import RunTimer
@@ -20,8 +21,8 @@ class Warehouse(Area):
     robot: Position
 
     def __init__(self, area_lines: list[str], movements: list[str]):
-        super().__init__(list(map(lambda line: list(map(Field, line)), area_lines)))
-        self.movements = list(map(Direction.from_arrow, "".join(movements)))
+        super().__init__(convert_string_list(area_lines, Field))
+        self.movements = convert_string("".join(movements), Direction.from_arrow)
         self.robot = self.find_first(Field.Robot)
 
     def move_robot(self, direction: Direction):
@@ -108,11 +109,11 @@ def make_wide_warehouse(lines: list[str]) -> list[str]:
 
 def parse_input_file(file_id: int, wide_map: bool) -> Warehouse:
     lines = read_input_file_id(15, file_id)
-    split = lines.index("")
+    parts = split_input_when_empty(lines)
     if wide_map:
-        return Warehouse(make_wide_warehouse(lines[0:split]), lines[split+1:])
+        return Warehouse(make_wide_warehouse(parts[0]), parts[1])
     else:
-        return Warehouse(lines[0:split], lines[split+1:])
+        return Warehouse(parts[0], parts[1])
 
 
 def level15(file_id: int, wide_map: bool) -> int:
