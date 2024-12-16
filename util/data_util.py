@@ -8,7 +8,10 @@ def transpose(l):
 
 
 def create_2d_list(length: int, height: int, value) -> list[list]:
-    return [[value] * length for _ in range(height)]
+    if callable(value):
+        return [[value() for _ in range(length)] for _ in range(height)]
+    else:
+        return [[value for _ in range(length)] for _ in range(height)]
 
 
 T = TypeVar("T")
