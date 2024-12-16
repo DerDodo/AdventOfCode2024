@@ -31,6 +31,8 @@ def blink_for_stone(stone: int, blinks_left: int) -> int:
 
     blink_for_stone.blink_dict[stone][blinks_left] = num_stones
     return num_stones
+
+
 blink_for_stone.blink_dict = defaultdict(dict)
 
 

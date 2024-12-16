@@ -2,7 +2,7 @@ from collections import defaultdict
 from enum import Enum
 
 from util.data_util import convert_string_list, convert_string, split_input_when_empty
-from util.file_util import read_input_file_id
+from util.file_util import read_input_file
 from util.math_util import Position, Area, Direction
 from util.run_util import RunTimer
 
@@ -108,7 +108,7 @@ def make_wide_warehouse(lines: list[str]) -> list[str]:
 
 
 def parse_input_file(file_id: int, wide_map: bool) -> Warehouse:
-    lines = read_input_file_id(15, file_id)
+    lines = read_input_file(15, file_id)
     parts = split_input_when_empty(lines)
     if wide_map:
         return Warehouse(make_wide_warehouse(parts[0]), parts[1])
@@ -125,8 +125,8 @@ def level15(file_id: int, wide_map: bool) -> int:
 
 if __name__ == '__main__':
     timer = RunTimer()
-    print(f"GPS sum: {level15(2, False)}")
-    print(f"GPS sum (wide): {level15(2, True)}")
+    print(f"GPS sum: {level15(0, False)}")
+    print(f"GPS sum (wide): {level15(0, True)}")
     timer.print()
 
 

@@ -2,7 +2,7 @@ import queue
 from enum import Enum
 
 from util.data_util import create_2d_list, convert_string_list
-from util.file_util import read_input_file_id
+from util.file_util import read_input_file
 from util.math_util import Position, Area, Direction, NEWSDirections
 from util.run_util import RunTimer
 
@@ -112,21 +112,21 @@ class Maze(Area):
 
 
 def parse_input_file(file_id: int) -> Maze:
-    lines = read_input_file_id(16, file_id)
+    lines = read_input_file(16, file_id)
     return Maze(lines)
 
 
-def level16(file_id: int) -> tuple[int, int]:
+def level16(file_id: int = 0) -> tuple[int, int]:
     maze = parse_input_file(file_id)
     return maze.get_path_score(), maze.a_num_good_seats()
 
 
 if __name__ == '__main__':
     timer = RunTimer()
-    print(f"Num tokens: {level16(2)}")
+    print(f"Num tokens: {level16()}")
     timer.print()
 
 
 def test_level16():
-    assert level16(0) == (7036, 45)
+    assert level16() == (7036, 45)
     assert level16(1) == (11048, 64)

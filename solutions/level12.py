@@ -1,13 +1,13 @@
 from collections import defaultdict
 
-from util.file_util import read_input_file_id
+from util.file_util import read_input_file
 from util.math_util import Area, Direction
 from util.run_util import RunTimer
 
 
 def parse_input_file(file_id: int) -> Area:
-    original_area = Area(read_input_file_id(12, file_id))
-    area = Area(read_input_file_id(12, file_id))
+    original_area = Area(read_input_file(12, file_id))
+    area = Area(read_input_file(12, file_id))
     next_area_id = 0
     for position in original_area:
         if area[position] == original_area[position]:
@@ -70,7 +70,7 @@ def level12(file_id: int, bulk_discount: bool) -> int:
 
 if __name__ == '__main__':
     timer = RunTimer()
-    print(f"Price of fence: {level12(5, False)}, {level12(5, True)}")
+    print(f"Price of fence: {level12(0, False)}, {level12(0, True)}")
     timer.print()
 
 
