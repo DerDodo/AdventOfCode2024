@@ -89,3 +89,4 @@ if __name__ == '__main__':
 
 def test_level14():
     assert level14_1(Position(11, 7)) == 12
+    # No test for part 2 since it will not finish
