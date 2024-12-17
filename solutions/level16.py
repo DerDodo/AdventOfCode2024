@@ -24,9 +24,9 @@ class Maze(Area):
     def __init__(self, lines: list[str]):
         super().__init__(convert_string_list(lines, Field))
         self.paths = create_2d_list(len(self.field[0]), len(self.field), set)
-        self.a_star()
+        self._a_star()
 
-    def a_star(self):
+    def _a_star(self):
         path_score = NOT_FOUND
         paths_to_follow = self._a_star_init_paths()
 
@@ -54,23 +54,22 @@ class Maze(Area):
 
     def _a_star_calc_next_steps(self, score: int, position: Position, direction: Direction, path_score: int) -> set[tuple[int, Position, Direction]]:
         next_steps = set()
-        for d in NEWSDirections:
-            if d == direction:
-                new_score = score + WALKING_COST
-            elif d != -direction:
-                new_score = score + WALKING_COST + ROTATION_COST
-            else:
-                continue
+        for d in filter(lambda newsd: newsd != -direction, NEWSDirections):
+            new_score = score + WALKING_COST + (ROTATION_COST if d != direction else 0)
             new_position = position + d
-            if self[new_position] != Field.Wall and new_score <= path_score:
-                found_higher_score = False
-                for s in self.paths[new_position.y][new_position.x]:
-                    if new_score < s + 1001:
-                        found_higher_score = True
-                        break
-                if not self.paths[new_position.y][new_position.x] or found_higher_score:
-                    next_steps.add((new_score, new_position, d))
+            if self._a_star_can_continue(new_position, new_score, path_score):
+                next_steps.add((new_score, position, d))
         return next_steps
+
+    def _a_star_can_continue(self, position: Position, score: int, path_score: int):
+        if self[position] != Field.Wall and score <= path_score:
+            found_higher_score = False
+            for s in self.paths[position.y][position.x]:
+                if score < s + 1001:
+                    found_higher_score = True
+                    break
+            return not self.paths[position.y][position.x] or found_higher_score
+        return False
 
     def get_path_score(self) -> int:
         start_position = self.find_first(Field.End)
