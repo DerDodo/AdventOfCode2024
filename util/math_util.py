@@ -377,7 +377,7 @@ class Area:
         if isinstance(self.field[0][0], Enum):
             return "\n".join(map(lambda line: "".join(map(lambda x: x.value, line)), self.field))
         else:
-            return "\n".join(map(lambda line: "".join(line), self.field))
+            return "\n".join(map(lambda line: "".join(map(lambda x: str(x), line)), self.field))
 
     def count(self, value) -> int:
         return sum(map(lambda line: sum([1 if x == value else 0 for x in line]), self.field))
