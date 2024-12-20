@@ -13,6 +13,7 @@ class Field(Enum):
     Start = "S"
     End = "E"
 
+
 NOT_FOUND = 1000000
 ROTATION_COST = 1000
 WALKING_COST = 1
@@ -58,17 +59,15 @@ class Maze(Area):
             new_score = score + WALKING_COST + (ROTATION_COST if d != direction else 0)
             new_position = position + d
             if self._a_star_can_continue(new_position, new_score, path_score):
-                next_steps.add((new_score, position, d))
+                next_steps.add((new_score, new_position, d))
         return next_steps
 
     def _a_star_can_continue(self, position: Position, score: int, path_score: int):
         if self[position] != Field.Wall and score <= path_score:
-            found_higher_score = False
             for s in self.paths[position.y][position.x]:
                 if score < s + 1001:
-                    found_higher_score = True
-                    break
-            return not self.paths[position.y][position.x] or found_higher_score
+                    return True
+            return not self.paths[position.y][position.x]
         return False
 
     def get_path_score(self) -> int:
@@ -93,26 +92,9 @@ class Maze(Area):
 
         return len(positions)
 
-    def print(self, path_positions: set[Position]):
-        for y in range(len(self.field)):
-            line = ""
-            for x in range(len(self.field[y])):
-                if self.field[y][x] == Field.Wall:
-                    line += "#"
-                elif self.field[y][x] == Field.Start:
-                    line += "S"
-                elif self.field[y][x] == Field.End:
-                    line += "E"
-                elif Position(x, y) in path_positions:
-                    line += "O"
-                else:
-                    line += "."
-            print(line)
-
 
 def parse_input_file(file_id: int) -> Maze:
-    lines = read_input_file(16, file_id)
-    return Maze(lines)
+    return Maze(read_input_file(16, file_id))
 
 
 def level16(file_id: int = 0) -> tuple[int, int]:
