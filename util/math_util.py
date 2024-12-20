@@ -103,6 +103,13 @@ class Direction(Enum):
             return self.x * other, self.y * other
         raise TypeError(f"{other} is no int")
 
+    def __add__(self, other):
+        if isinstance(other, Direction):
+            return self.x * other.x, self.y * other.y
+        if isinstance(other, int):
+            return self.x * other, self.y * other
+        raise TypeError(f"{other} is no int")
+
     def __hash__(self) -> int:
         return self.hash_value
 
@@ -411,3 +418,4 @@ class Area:
         for position in self:
             if self[position] == value:
                 return position
+        raise ValueError(f"Couldn't find {value} in area!")
