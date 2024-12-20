@@ -1,5 +1,5 @@
 from util.file_util import read_input_file
-from util.math_util import Area, NEWSDirections, Direction, Position
+from util.math_util import Area, NEWSDirections, Position
 from util.run_util import RunTimer
 
 
@@ -17,17 +17,21 @@ maze_dict = {
 
 def create_cheat_matrix(seconds: int) -> set[Position]:
     cheat_locations = set()
-    last_locations = {Position(0, 0)}
+    last_locations = { Position(0, 0) }
+
     for _ in range(seconds):
         new_locations = set()
         for location in last_locations:
             for direction in NEWSDirections:
-                new_locations += location + direction
+                new_locations.add(location + direction)
+
         cheat_locations.update(new_locations)
         last_locations = new_locations
+
     cheat_locations.remove(Position(0, 0))
     for direction in NEWSDirections:
         cheat_locations.remove(Position(direction.x, direction.y))
+
     return cheat_locations
 
 
@@ -55,19 +59,19 @@ class Maze(Area):
                     break
         self[self.end] = steps
 
-    def find_cheats(self, cheat_target: int) -> int:
-        num_cheats = 0
-        for position in self:
-            num_cheats += self.get_num_cheats(position, cheat_target)
-        return num_cheats
+    def find_cheats(self, cheat_target: int, cheat_locations: set[Position]) -> int:
+        return sum(map(lambda position: self.get_num_cheats(position, cheat_target, cheat_locations), self))
 
-    def get_num_cheats(self, position: Position, cheat_target: int) -> int:
+    def get_num_cheats(self, position: Position, cheat_target: int, cheat_locations: set[Position]) -> int:
         num_cheats = 0
         if self[position] != WALL:
-            for direction in :
-                target = position + direction
-                if self.is_in_bounds(target) and self[target] != WALL:
-                    cheated_distance = self[target] - self[position] - 2
+            for direction in cheat_locations:
+                # runtime optimization
+                # target = position - direction
+                target_x = position.x + direction.x
+                target_y = position.y + direction.y
+                if 0 <= target_x < self.bounds.x and 0 <= target_y < self.bounds.y and self.field[target_y][target_x] != WALL:
+                    cheated_distance = self.field[target_y][target_x] - self[position] - abs(direction.x) - abs(direction.y)
                     if cheated_distance >= cheat_target:
                         num_cheats += 1
 
@@ -80,13 +84,13 @@ def parse_input_file() -> Maze:
 
 def level20(cheat_target: int, cheat_duration: int) -> int:
     maze = parse_input_file()
-    cheat_matrix_1 = create_cheat_matrix(cheat_duration)
-    return maze.find_cheats(cheat_target)
+    return maze.find_cheats(cheat_target, create_cheat_matrix(cheat_duration))
 
 
 if __name__ == '__main__':
     timer = RunTimer()
-    print(f"Available patterns: {level20(100, create_cheat_matrix(2))}")
+    print(f"Num cheats (2ps): { level20(100, 2) }")
+    print(f"Num cheats (20ps): { level20(100, 20) }")
     timer.print()
 
 
@@ -100,3 +104,11 @@ def test_level20():
     assert level20(6, 2) == 16
     assert level20(4, 2) == 30
     assert level20(2, 2) == 44
+    assert level20(76, 20) == 3
+    assert level20(74, 20) == 7
+    assert level20(72, 20) == 29
+    assert level20(70, 20) == 41
+    assert level20(68, 20) == 55
+    assert level20(66, 20) == 67
+    assert level20(64, 20) == 86
+    assert level20(62, 20) == 106

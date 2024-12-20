@@ -341,6 +341,9 @@ class Position:
     def __len__(self):
         return self.x * self.y
 
+    def get_orthogonal_length(self) -> int:
+        return abs(self.x) + abs(self.y)
+
     def copy(self):
         return Position(self.x, self.y)
 
