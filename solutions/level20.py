@@ -15,40 +15,20 @@ maze_dict = {
 }
 
 
-cheat_directions = [
-    Direction.North * 2,
-    Direction.East * 2,
-    Direction.South * 2,
-    Direction.West * 2,
-    Direction.NorthEast,
-    Direction.SouthEast,
-    Direction.SouthWest,
-    Direction.NorthWest
-]
-
-
-cheat_directions_big = [
-    Direction.North * 2,
-    Direction.North * 3,
-    Direction.East * 2,
-    Direction.East * 3,
-    Direction.South * 2,
-    Direction.South * 3,
-    Direction.West * 2,
-    Direction.West * 3,
-    Direction.NorthEast,
-    Direction.NorthEast + Direction.East,
-    Direction.NorthEast + Direction.North,
-    Direction.SouthEast,
-    Direction.SouthEast + Direction.East,
-    Direction.SouthEast + Direction.South,
-    Direction.SouthWest,
-    Direction.SouthWest + Direction.West,
-    Direction.SouthWest + Direction.South,
-    Direction.NorthWest,
-    Direction.NorthWest + Direction.West,
-    Direction.NorthWest + Direction.North
-]
+def create_cheat_matrix(seconds: int) -> set[Position]:
+    cheat_locations = set()
+    last_locations = {Position(0, 0)}
+    for _ in range(seconds):
+        new_locations = set()
+        for location in last_locations:
+            for direction in NEWSDirections:
+                new_locations += location + direction
+        cheat_locations.update(new_locations)
+        last_locations = new_locations
+    cheat_locations.remove(Position(0, 0))
+    for direction in NEWSDirections:
+        cheat_locations.remove(Position(direction.x, direction.y))
+    return cheat_locations
 
 
 class Maze(Area):
@@ -84,7 +64,7 @@ class Maze(Area):
     def get_num_cheats(self, position: Position, cheat_target: int) -> int:
         num_cheats = 0
         if self[position] != WALL:
-            for direction in cheat_directions:
+            for direction in :
                 target = position + direction
                 if self.is_in_bounds(target) and self[target] != WALL:
                     cheated_distance = self[target] - self[position] - 2
@@ -98,24 +78,25 @@ def parse_input_file() -> Maze:
     return Maze(read_input_file(20))
 
 
-def level20(cheat_target: int) -> tuple[int, int]:
+def level20(cheat_target: int, cheat_duration: int) -> int:
     maze = parse_input_file()
-    return maze.find_cheats(cheat_target), 0
+    cheat_matrix_1 = create_cheat_matrix(cheat_duration)
+    return maze.find_cheats(cheat_target)
 
 
 if __name__ == '__main__':
     timer = RunTimer()
-    print(f"Available patterns: {level20(100)}")
+    print(f"Available patterns: {level20(100, create_cheat_matrix(2))}")
     timer.print()
 
 
 def test_level20():
-    assert level20(64) == (1, 0)
-    assert level20(38) == (3, 0)
-    assert level20(20) == (5, 0)
-    assert level20(12) == (8, 0)
-    assert level20(10) == (10, 0)
-    assert level20(8) == (14, 0)
-    assert level20(6) == (16, 0)
-    assert level20(4) == (30, 0)
-    assert level20(2) == (44, 0)
+    assert level20(64, 2) == 1
+    assert level20(38, 2) == 3
+    assert level20(20, 2) == 5
+    assert level20(12, 2) == 8
+    assert level20(10, 2) == 10
+    assert level20(8, 2) == 14
+    assert level20(6, 2) == 16
+    assert level20(4, 2) == 30
+    assert level20(2, 2) == 44
