@@ -135,6 +135,7 @@ class Direction(Enum):
     def __lt__(self, other):
         return self.hash_value < other.hash_value
 
+
 NEWSDirections = [
     Direction.North,
     Direction.East,
@@ -183,14 +184,15 @@ def is_turn_left(old: Direction, new: Direction) -> bool:
             return new == Direction.SouthWest
 
 
-
 class Position:
     x: int
     y: int
+    hash_value: int
 
     def __init__(self, x: int, y: int):
         self.x = x
         self.y = y
+        self.calc_hash()
 
     def __eq__(self, other) -> bool:
         if isinstance(other, Position):
@@ -223,6 +225,7 @@ class Position:
             self.y += other[1]
         else:
             raise TypeError(f"{other} is no Position, Direction, int, or tuple[int, int]")
+        self.calc_hash()
         return self
 
     def __sub__(self, other):
@@ -246,6 +249,7 @@ class Position:
             self.y -= other[1]
         else:
             raise TypeError(f"{other} is no Position, Direction, int, or tuple[int, int]")
+        self.calc_hash()
         return self
 
     def __mul__(self, other):
@@ -269,6 +273,7 @@ class Position:
             self.y *= other[1]
         else:
             raise TypeError(f"{other} is no Position, int, or tuple[int, int]")
+        self.calc_hash()
         return self
 
     def __floordiv__(self, other):
@@ -292,13 +297,17 @@ class Position:
             self.y //= other[1]
         else:
             raise TypeError(f"{other} is no Position, int, or tuple[int, int]")
+        self.calc_hash()
         return self
 
     def __neg__(self):
         return Position(-self.x, -self.y)
 
     def __hash__(self):
-        return self.y * 10000000 + self.x
+        return self.hash_value
+
+    def calc_hash(self):
+        self.hash_value = self.y * 10000000 + self.x
 
     def is_in_bounds(self, bounds) -> bool:
         if isinstance(bounds, Position):
@@ -325,6 +334,7 @@ class Position:
             self.y = value
         else:
             raise IndexError(f"Invalid index {index}")
+        self.calc_hash()
 
     def __mod__(self, other):
         if isinstance(other, Position):
