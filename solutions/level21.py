@@ -60,62 +60,8 @@ directional_pad = {
 }
 
 
-def get_buttons(start: Position, end: Position) -> list[tuple[Direction, int]]:
-    result = []
-    if end.y > start.y:
-        result.append((Direction.South, end.y - start.y))
-    elif end.y < start.y:
-        result.append((Direction.North, start.y - end.y))
-    if end.x > start.x:
-        result.append((Direction.East, end.x - start.x))
-    elif end.x < start.x:
-        result.append((Direction.West, start.x - end.x))
-    return result
-
-
-A_B = [(0, 1), (1, 0)]
-
-
-def create_options_with_a(start: Position, new_movements: list[tuple[Direction, int]], forbidden_spot: Position) -> OptionList:
-    if len(new_movements) == 2:
-        options = []
-
-        for a, b in A_B:
-            if (start.x + new_movements[a][0].x * new_movements[a][1] != forbidden_spot.x or
-                    start.y + new_movements[a][0].y * new_movements[a][1] != forbidden_spot.y):
-                movements = [new_movements[a][0]] * new_movements[a][1] + [new_movements[b][0]] * new_movements[b][1] + ["A"]
-                options.append(Option(movements))
-
-        return OptionList(options)
-    elif len(new_movements) == 1:
-        movements = [new_movements[0][0]] * new_movements[0][1] + ["A"]
-        return OptionList([Option(movements)])
-    elif len(new_movements) == 0:
-        return OptionList([Option(["A"])])
-    else:
-        raise ValueError(f"Invalid movements {new_movements}")
-
-
-class Cache:
-    values: dict[Direction | str, dict[Direction | str, OptionList]]
-
-    def __init__(self, pad: dict):
-        self.values = defaultdict(dict)
-        for x in pad:
-            start = pad[x]
-            for y in pad:
-                end = pad[y]
-                buttons = get_buttons(start, end)
-                options = create_options_with_a(start, buttons, pad[ILLEGAL])
-                self.values[start][end] = options
-
-
-keypad_cache = Cache(keypad)
-directional_cache = Cache(directional_pad)
-
-
 def solve_code(code: str, num_robots: int) -> int:
-    parts = create_options_keypad(list(code), keypad, keypad_cache)
+    parts = create_options(list(code), keypad)
     min_len = sum(map(lambda part: solve_codes_directional(part, num_robots), parts))
     return calc_complexity(code, min_len)
 
@@ -132,47 +78,60 @@ def solve_codes_directional(codes: OptionList, num_robots: int) -> int:
 
     min_len = 9999999999999999999
     for code in codes.options:
-        parts = create_options_directional(code, directional_pad, directional_cache)
+        parts = create_options(code.commands, directional_pad)
         min_parts_len = sum(map(lambda part: solve_codes_directional(part, num_robots - 1), parts))
         min_len = min(min_len, min_parts_len)
     solution_cache[num_robots][codes.hash] = min_len
     return min_len
 
 
-def create_options_keypad(code: list[str], pad: dict, cache: Cache) -> list[OptionList]:
+def create_options(code: list, pad: dict) -> list[OptionList]:
     parts = []
     position = pad["A"]
     for button in code:
         target = pad[button]
-        parts.append(cache.values[position][target])
+        buttons = get_buttons(position, target)
+        options = create_options_with_a(position, buttons, pad[ILLEGAL])
+        parts.append(options)
         position = target
     return parts
 
 
-option_cache = dict[int, list[OptionList]]()
+def get_buttons(start: Position, end: Position) -> list[tuple[Direction, int]]:
+    result = []
+    if end.y > start.y:
+        result.append((Direction.South, end.y - start.y))
+    elif end.y < start.y:
+        result.append((Direction.North, start.y - end.y))
+    if end.x > start.x:
+        result.append((Direction.East, end.x - start.x))
+    elif end.x < start.x:
+        result.append((Direction.West, start.x - end.x))
+    return result
 
 
-def create_options_directional(code: Option, pad: dict, cache: Cache) -> list[OptionList]:
-    if code.hash in option_cache:
-        return option_cache[code.hash]
+def create_options_with_a(start: Position, new_movements: list[tuple[Direction, int]], forbidden_spot: Position) -> OptionList:
+    if len(new_movements) == 2:
+        options = []
 
-    parts = []
-    position = pad["A"]
-    for button in code.commands:
-        target = pad[button]
-        parts.append(cache.values[position][target])
-        position = target
-    option_cache[code.hash] = parts
-    return parts
+        for a, b in [(0, 1), (1, 0)]:
+            if (start.x + new_movements[a][0].x * new_movements[a][1] != forbidden_spot.x or
+                    start.y + new_movements[a][0].y * new_movements[a][1] != forbidden_spot.y):
+                movements = [new_movements[a][0]] * new_movements[a][1] + [new_movements[b][0]] * new_movements[b][1] + ["A"]
+                options.append(Option(movements))
+
+        return OptionList(options)
+    elif len(new_movements) == 1:
+        movements = [new_movements[0][0]] * new_movements[0][1] + ["A"]
+        return OptionList([Option(movements)])
+    elif len(new_movements) == 0:
+        return OptionList([Option(["A"])])
+    else:
+        raise ValueError(f"Invalid movements {new_movements}")
 
 
 def calc_complexity(code: str, min_len: int) -> int:
     return min_len * int(code.replace("A", ""))
-
-
-def calc_complexity_old(code: str, patterns: list[Option]) -> int:
-    pattern_len = min(map(lambda p: len(p.movements), patterns))
-    return pattern_len * int(code.replace("A", ""))
 
 
 def level21(num_robots: int) -> int:
