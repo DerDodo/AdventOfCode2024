@@ -27,7 +27,8 @@ class ClawMachine:
         # Add the two vectors, simplify the formula, and restructure.
         # There can only be multiple solutions if the two vectors have the same steepness.
         # Fortunately this didn't happen - so no edge case management here.
-        num_a = (target_y * self.button_b.x - self.button_b.y * target_x) / (self.button_a.y * self.button_b.x - self.button_b.y * self.button_a.x)
+        num_a = ((target_y * self.button_b.x - self.button_b.y * target_x) /
+                 (self.button_a.y * self.button_b.x - self.button_b.y * self.button_a.x))
         if num_a == int(num_a):
             num_b = (target_x - self.button_a.x * num_a) / self.button_b.x
             return int(num_a) * 3 + int(num_b)

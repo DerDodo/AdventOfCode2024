@@ -17,7 +17,7 @@ maze_dict = {
 
 def create_cheat_matrix(seconds: int) -> set[Position]:
     cheat_locations = set()
-    last_locations = { Position(0, 0) }
+    last_locations = {Position(0, 0)}
 
     for _ in range(seconds):
         new_locations = set()
@@ -40,7 +40,7 @@ class Maze(Area):
     end: Position
 
     def __init__(self, lines: list[str]):
-        super().__init__(list(map(lambda l: list(map(lambda v: maze_dict[v], l)), lines)))
+        super().__init__(list(map(lambda line: list(map(lambda v: maze_dict[v], line)), lines)))
         string_field = Area(lines)
         self.start = string_field.find_first("S")
         self.end = string_field.find_first("E")

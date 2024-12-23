@@ -63,7 +63,7 @@ class Computer:
             return False
         return True
 
-    def bxc(self, operand: int) -> bool:
+    def bxc(self, _: int) -> bool:
         self.B = self.B ^ self.C
         return True
 

@@ -6,6 +6,7 @@ from util.file_util import read_input_file
 from util.math_util import Position, Area, NEWSDirections
 from util.run_util import RunTimer
 
+
 class Field(Enum):
     Free = "."
     Corrupted = "#"
@@ -49,7 +50,7 @@ class Memory(Area):
 
 
 def parse_input_file() -> list[Position]:
-    return list(map(lambda l: Position(*map(int,l.split(","))), read_input_file(18)))
+    return list(map(lambda line: Position(*map(int, line.split(","))), read_input_file(18)))
 
 
 def level18_1(size: int, num_bytes_to_push: int) -> int:

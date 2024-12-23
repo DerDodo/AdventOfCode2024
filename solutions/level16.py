@@ -53,7 +53,8 @@ class Maze(Area):
             paths_to_follow.put((ROTATION_COST + WALKING_COST, reindeer_start + Direction.North, Direction.North))
         return paths_to_follow
 
-    def _a_star_calc_next_steps(self, score: int, position: Position, direction: Direction, path_score: int) -> set[tuple[int, Position, Direction]]:
+    def _a_star_calc_next_steps(self, score: int, position: Position, direction: Direction, path_score: int)\
+            -> set[tuple[int, Position, Direction]]:
         next_steps = set()
         for d in filter(lambda newsd: newsd != -direction, NEWSDirections):
             new_score = score + WALKING_COST + (ROTATION_COST if d != direction else 0)

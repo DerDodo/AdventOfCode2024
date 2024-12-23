@@ -2,13 +2,13 @@ import math
 from collections import defaultdict
 
 from util.file_util import read_input_file
-from util.math_util import Position, Area
+from util.math_util import Position
 from util.run_util import RunTimer
 
 
 class Robot:
     # runtime optimization
-    #position: Position
+    # position: Position
     x: int
     y: int
     velocity: Position

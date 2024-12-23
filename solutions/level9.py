@@ -43,7 +43,7 @@ def rearrange_disc_blocks(disc: list[int]):
 FreeSpaceMap = list[tuple[int, int]]
 
 
-def map_free_space(disc:list[int]) -> FreeSpaceMap:
+def map_free_space(disc: list[int]) -> FreeSpaceMap:
     free_spaces: FreeSpaceMap = []
     i = 0
     while i < len(disc):

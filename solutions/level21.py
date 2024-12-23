@@ -71,7 +71,7 @@ solution_cache: dict[int, dict[int, int]] = defaultdict(dict)
 
 def solve_codes_directional(codes: OptionList, num_robots: int) -> int:
     if num_robots == 0:
-        return min(map(lambda code: len(code.commands), codes.options))
+        return min(map(lambda option: len(option.commands), codes.options))
 
     if codes.hash in solution_cache[num_robots]:
         return solution_cache[num_robots][codes.hash]

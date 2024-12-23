@@ -20,7 +20,7 @@ class Facility(Area):
         self.guard_start = self.find_first(Field.GuardStart)
 
     # runtime optimization
-    #def set_obstacle(self, position: Position):
+    # def set_obstacle(self, position: Position):
     def set_obstacle(self, x: int, y: int):
         self.field[y][x] = Field.Obstacle
 
@@ -99,7 +99,9 @@ def level6_2() -> int:
         start_direction = original_guard.direction
         original_guard.step()
 
-        if (original_guard.position_x != original_facility.guard_start.x or original_guard.position_y != original_facility.guard_start.y) and original_guard.position_hash() not in tried_obstacles:
+        if ((original_guard.position_x != original_facility.guard_start.x or
+             original_guard.position_y != original_facility.guard_start.y) and
+                original_guard.position_hash() not in tried_obstacles):
             trial_guard = Guard(trial_facility)
             trial_facility.set_obstacle(original_guard.position_x, original_guard.position_y)
             tried_obstacles.add(original_guard.position_hash())
