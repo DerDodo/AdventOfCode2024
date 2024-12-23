@@ -1,7 +1,7 @@
 from collections import defaultdict
 
 from util.file_util import read_input_file
-from util.math_util import Area, Direction
+from util.math_util import Area, Direction, NEWSDirections
 from util.run_util import RunTimer
 
 
@@ -20,17 +20,19 @@ def calc_area_fences(area: Area, value: int) -> tuple[int, dict[int, dict[Direct
     fences: dict[int, dict[Direction, list[int]]] = defaultdict(lambda: defaultdict(list))
     sum_area = 0
 
-    for position in area:
-        if area[position] == value:
-            sum_area += 1
-            if not area.safe_check(position + Direction.North, value):
-                fences[position.y][Direction.North].append(position.x)
-            if not area.safe_check(position + Direction.East, value):
-                fences[position.x][Direction.East].append(position.y)
-            if not area.safe_check(position + Direction.South, value):
-                fences[position.y][Direction.South].append(position.x)
-            if not area.safe_check(position + Direction.West, value):
-                fences[position.x][Direction.West].append(position.y)
+    # runtime optimization
+    for y in range(area.bounds.y):
+        for x in range(area.bounds.x):
+            if area.field[y][x] == value:
+                sum_area += 1
+                if not area.fast_safe_check(x + Direction.North.x, y + Direction.North.y, value):
+                    fences[y][Direction.North].append(x)
+                if not area.fast_safe_check(x + Direction.East.x, y + Direction.East.y, value):
+                    fences[x][Direction.East].append(y)
+                if not area.fast_safe_check(x + Direction.South.x, y + Direction.South.y, value):
+                    fences[y][Direction.South].append(x)
+                if not area.fast_safe_check(x + Direction.West.x, y + Direction.West.y, value):
+                    fences[x][Direction.West].append(y)
 
     return sum_area, fences
 

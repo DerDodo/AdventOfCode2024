@@ -385,6 +385,9 @@ class Area:
     def safe_check(self, position: Position, value):
         return position.is_in_bounds(self.bounds) and self[position] == value
 
+    def fast_safe_check(self, x: int, y: int, value):
+        return 0 <= x < self.bounds.x and 0 <= y < self.bounds.y and self.field[y][x] == value
+
     def __iter__(self):
         for y in range(len(self.field)):
             for x in range(len(self.field[0])):

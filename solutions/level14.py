@@ -7,18 +7,22 @@ from util.run_util import RunTimer
 
 
 class Robot:
-    position: Position
+    # runtime optimization
+    #position: Position
+    x: int
+    y: int
     velocity: Position
 
     def __init__(self, line: str):
         parts = line.split(" ")
         position_parts = parts[0][2:].split(",")
         velocity_parts = parts[1][2:].split(",")
-        self.position = Position(int(position_parts[0]), int(position_parts[1]))
+        self.x = int(position_parts[0])
+        self.y = int(position_parts[1])
         self.velocity = Position(int(velocity_parts[0]), int(velocity_parts[1]))
 
     def __str__(self) -> str:
-        return f"Robot({self.position}, {self.velocity})"
+        return f"Robot({self.x}/{self.y}, {self.velocity})"
 
 
 def parse_input_file() -> list[Robot]:
@@ -31,10 +35,10 @@ def calc_safety_factor(robots: list[Robot], bounds: Position):
     bounds //= 2
 
     for robot in robots:
-        if robot.position.x == bounds.x or robot.position.y == bounds.y:
+        if robot.x == bounds.x or robot.y == bounds.y:
             continue
-        x = 0 if robot.position.x < bounds.x else 1
-        y = 0 if robot.position.y < bounds.y else 1
+        x = 0 if robot.x < bounds.x else 1
+        y = 0 if robot.y < bounds.y else 1
         quadrants[y * 2 + x] += 1
 
     return math.prod(quadrants)
@@ -43,19 +47,20 @@ def calc_safety_factor(robots: list[Robot], bounds: Position):
 def level14_1(bounds: Position) -> int:
     robots = parse_input_file()
     for robot in robots:
-        robot.position = (robot.position + robot.velocity * 100) % bounds
+        robot.x = (robot.x + robot.velocity.x * 100) % bounds.x
+        robot.y = (robot.y + robot.velocity.y * 100) % bounds.y
     return calc_safety_factor(robots, bounds)
 
 
 def did_form_tree(robots: list[Robot]) -> bool:
     robot_dict = defaultdict(set)
     for robot in robots:
-        robot_dict[robot.position.y].add(robot.position.x)
+        robot_dict[robot.y].add(robot.x)
 
     neighbours = 0
     for robot in robots:
-        x = robot.position.x
-        y = robot.position.y
+        x = robot.x
+        y = robot.y
         if x in robot_dict[y - 1]:
             neighbours += 1
         if x in robot_dict[y + 1]:
@@ -72,8 +77,9 @@ def level14_2(bounds: Position) -> int:
     for i in range(1, bounds.x * bounds.y + 1):
         robot_set = set()
         for robot in robots:
-            robot.position = (robot.position + robot.velocity) % bounds
-            robot_set.add(robot.position)
+            robot.x = (robot.x + robot.velocity.x) % bounds.x
+            robot.y = (robot.y + robot.velocity.y) % bounds.y
+            robot_set.add(robot.y * 100000 + robot.x)
 
         if len(robot_set) == len(robots) and did_form_tree(robots):
             return i
